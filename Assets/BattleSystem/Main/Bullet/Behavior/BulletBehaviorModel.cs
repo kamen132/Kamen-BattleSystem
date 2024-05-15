@@ -1,5 +1,7 @@
-﻿using BattleSystem.Const;
+﻿using BattleSystem.BattleMsg;
+using BattleSystem.Const;
 using BattleSystem.Main.Base.Behavior;
+using KamenMessage.RunTime.Basic.Message;
 using KamenMessage.RunTime.Interface.Message;
 
 namespace BattleSystem.Main.Bullet
@@ -8,6 +10,10 @@ namespace BattleSystem.Main.Bullet
     {
         public override BattleBehaviorType Type => BattleBehaviorType.Bullet;
         protected BulletModel Model { get; set; }
+
+        public BulletBehaviorModel(IMessageService messageService) : base(messageService)
+        {
+        }
 
         public virtual void SetModel(BulletModel model)
         {
@@ -31,11 +37,16 @@ namespace BattleSystem.Main.Bullet
 
         protected virtual void OnHit()
         {
-
-        }
-
-        public BulletBehaviorModel(IMessageService messageService) : base(messageService)
-        {
+            if (Model.Config.EndSkill > 0)
+            {
+                Model.Atk.UseSkill(Model.Config.EndSkill, null, Model.Destination);
+                var resTag = Model.Config.HitEffectPrefab;
+                MessageService.Instance.Dispatch(new CreateEffectDto
+                {
+                    ResourceTag = resTag,
+                    Position = Model.Destination
+                });
+            }
         }
     }
 }

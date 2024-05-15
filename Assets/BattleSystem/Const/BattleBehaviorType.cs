@@ -2,13 +2,8 @@
 {
     public enum BattleBehaviorType
     {
-        Level,
         Buff,
         Bullet,
-        GroundEffect,
-        Halo,
-        BattleShopTower,
-        Core,
         Hero,
         Monster,
         Tower
@@ -26,5 +21,24 @@
         FallSkyOnEnemy,
         TouchHitEnemy
     }
+    
+    public enum BattleUnitTargetType
+    {
+        Default,
+        Tower,
+        Core,
+        Monster
+    }
 
+
+    public enum BattleParamType
+    {
+        Dmg,
+        Radius,
+        SpeedDec,
+        EnemyNum,
+        DmgInc,
+        Chance,
+        Hp,
+    }
 }

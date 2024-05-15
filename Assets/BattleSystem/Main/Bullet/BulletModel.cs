@@ -17,7 +17,6 @@ namespace BattleSystem.Main.Bullet
         public Vector3 Destination { get; set; }
         public DamageSourceType DamageSourceType { get; set; }
         public BulletConfig Config { get; set; }
-        
         public bool IsDispose { get; set; }
 
         public void Init(Transform parent, BattleUnitModel atk, int bulletId, BattleUnitModel hit, Vector3 bornPosition, DamageSourceType sourceType)
@@ -28,9 +27,6 @@ namespace BattleSystem.Main.Bullet
             BornPosition = bornPosition;
             Destination = Hit.Transform.position;
             DamageSourceType = sourceType;
-            BulletBehaviorModel behavior = BulletContainer.Instance.GetBehaviorByBulletType(Config.AtkLogic);
-            behavior.SetModel(this);
-            BehaviorContainer.Instance.AddBattleBehavior(behavior);
         }
     }
 }

@@ -11,11 +11,10 @@ namespace BattleSystem
 {
 	public class BehaviorContainer : MonoSingleton<BehaviorContainer>
 	{
-		private Dictionary<BattleBehaviorType, List<BattleBehaviorModel>> BattleBehaviorModels { get; set; }
+		private Dictionary<BattleBehaviorType, List<BattleBehaviorModel>> BattleBehaviorModels { get; set; } = new Dictionary<BattleBehaviorType, List<BattleBehaviorModel>>();
 
 		protected override void OnInitialize()
 		{
-			BattleBehaviorModels = new Dictionary<BattleBehaviorType, List<BattleBehaviorModel>>();
 			MessageService.Instance.Register<ReadyBattleDto>(OnReadyBattle);
 			MessageService.Instance.Register<BattleRoundStartDto>(OnBattleRoundStart);
 			MessageService.Instance.Register<BattleEndDto>(OnBattleEnd);
@@ -30,18 +29,14 @@ namespace BattleSystem
 				switch (battleBehaviorModel.Key)
 				{
 					case BattleBehaviorType.Bullet:
-					case BattleBehaviorType.GroundEffect:
 					case BattleBehaviorType.Monster:
 						foreach (BattleBehaviorModel behaviorModel in battleBehaviorModel.Value.ToList())
 						{
 							behaviorModel.Release();
 						}
+
 						break;
-					case BattleBehaviorType.Level:
 					case BattleBehaviorType.Buff:
-					case BattleBehaviorType.Halo:
-					case BattleBehaviorType.BattleShopTower:
-					case BattleBehaviorType.Core:
 					case BattleBehaviorType.Hero:
 					case BattleBehaviorType.Tower:
 						break;

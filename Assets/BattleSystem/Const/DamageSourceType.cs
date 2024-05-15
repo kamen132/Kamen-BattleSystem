@@ -8,4 +8,13 @@
         GroundEffect
     }
 
+    
+    public enum SkillEffectType
+    {
+        Laser,
+        CommonEffect,
+        Explode,
+        Column
+    }
+
 }

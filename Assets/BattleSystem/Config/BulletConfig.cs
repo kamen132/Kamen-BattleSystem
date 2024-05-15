@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using BattleSystem.Const;
+using BattleSystem.Tools;
 
 namespace BattleSystem.Config
 {
@@ -23,6 +24,8 @@ namespace BattleSystem.Config
 
         public int EndSkill { get; set; }
 
-        public List<string> ResourceCode { get; set; }
+        public ResourceTag BulletPrefab { get; set; }
+        
+        public ResourceTag HitEffectPrefab { get; set; }
     }
 }

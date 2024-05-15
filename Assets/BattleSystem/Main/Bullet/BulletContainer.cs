@@ -13,12 +13,11 @@ namespace BattleSystem.Main.Bullet
     public class BulletContainer : MonoSingleton<BulletContainer>
     {
         public readonly Dictionary<BulletType, BulletBehaviorModel> mBulletBehaviorMap = new Dictionary<BulletType, BulletBehaviorModel>();
-        public ReactiveCollection<BulletModel> Bullets { get; set; }
+        public ReactiveCollection<BulletModel> Bullets { get; set; } = new ReactiveCollection<BulletModel>();
         public Transform Parent { get; private set; }
 
         protected override void OnInitialize()
         {
-            Bullets = new ReactiveCollection<BulletModel>();
             MessageService.Instance.Register<BattleRoundEndDto>(OnBattleRoundEnd);
         }
 
@@ -36,6 +35,9 @@ namespace BattleSystem.Main.Bullet
         {
             BulletModel model = new BulletModel();
             model.Init(Parent, atk, bulletId, hit, bornPosition, sourceType);
+            BulletBehaviorModel behavior = GetBehaviorByBulletType(model.Config.AtkLogic);
+            behavior.SetModel(model);
+            BehaviorContainer.Instance.AddBattleBehavior(behavior);
             Bullets.Add(model);
             return model;
         }

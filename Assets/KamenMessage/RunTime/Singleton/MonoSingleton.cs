@@ -1,11 +1,29 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace KamenMessage.RunTime.Singleton
 {
     public class MonoSingleton<T> : MonoSingletonBase where T : MonoBehaviour
     {
         private static readonly string mMonoSingletonRoot = "KamenApp/Kamen";
+        
+        private readonly List<IDisposable> _entrustDisposables = new List<IDisposable>();
 
+        protected void EntrustDisposable(IDisposable disposable)
+        {
+            _entrustDisposables.Add(disposable);
+        }
+        
+        public void EntrustDisposablesClear()
+        {
+            foreach (IDisposable entrustDisposable in _entrustDisposables)
+            {
+                entrustDisposable.Dispose();
+            }
+            _entrustDisposables.Clear();
+        }
+        
         private static T mInstance = null;
         public static T Instance
         {
@@ -86,6 +104,8 @@ namespace KamenMessage.RunTime.Singleton
             {
                 singleton.MonoSingletonInterfaceOnUnInitialize();
             }
+
+            EntrustDisposablesClear();
             OnDestroyEx();
             mInstance = null;
         }

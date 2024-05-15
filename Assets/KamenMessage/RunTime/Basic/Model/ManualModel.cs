@@ -8,7 +8,8 @@ namespace KamenMessage.RunTime.Basic.Model
     public abstract class ManualModel : IModel
     {
         private readonly List<IDisposable> mEntrustDisposables = new List<IDisposable>();
-
+        protected MessageService MessageService => Message.MessageService.Instance;
+        
         ~ManualModel()
         {
             EntrustDisposablesClear();
