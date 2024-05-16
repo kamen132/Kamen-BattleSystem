@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using BattleSystem.BattleMsg;
 using BattleSystem.Const;
 using BattleSystem.Main.Base.Model;
 using BattleSystem.Main.Buff;
 using BattleSystem.Main.Skill;
+using UniRx;
 using UnityEngine;
 
 namespace BattleSystem.Main.Unit
@@ -32,7 +35,32 @@ namespace BattleSystem.Main.Unit
         public event UnitActionEvent OnKillEvent;
         public event UnitOnAddBuffEvent OnAddBuffEvent;
         public event UnitActionEvent OnCritEvent;
+        public ReactiveCollection<NumericVariableValue> NumericVariableValues { get; set; }
 
+        public ReactiveDictionary<string, BuffModel> Buffs { get; set; }
+        public BattleUnitModel()
+        {
+            NumericVariableValues = new ReactiveCollection<NumericVariableValue>();
+            NumericVariableValues.ObserveAdd().Subscribe(delegate(CollectionAddEvent<NumericVariableValue> @event)
+            {
+                RefreshProperty(@event.Value);
+            });
+            NumericVariableValues.ObserveRemove().Subscribe(delegate(CollectionRemoveEvent<NumericVariableValue> @event)
+            {
+                RefreshProperty(@event.Value);
+            });
+            
+            Buffs = new ReactiveDictionary<string, BuffModel>();
+        }
+
+        
+        protected void OnBattleClear(BattleClearDto dto)
+        {
+            EntrustDisposablesClear();
+            NumericVariableValues.Clear();
+            Buffs.Clear();
+        }
+        
         public void UseSkill(int skillId, List<BattleUnitModel> targets = null, Vector3 position = default(Vector3))
         {
             string typeName = $"Model.Battle.Behavior.Quark.Other.Impl.SkillImpl.Skill{skillId}";
@@ -88,6 +116,30 @@ namespace BattleSystem.Main.Unit
             {
                 attacker.OnKillEvent?.Invoke(this, attacker, sourceType);
             }
+        }
+        private void RefreshProperty(NumericVariableValue numericVariableValue)
+        {
+            OnRefreshProperty(numericVariableValue.NumericVariableType);
+        }
+        protected abstract void OnRefreshProperty(NumericVariableType numericVariableType);
+        
+        public int GetNumericVariableValue(NumericVariableType type)
+        {
+            return NumericVariableValues.Where((NumericVariableValue n) => n.NumericVariableType == type).Sum((NumericVariableValue n) => n.Value);
+        }
+        
+        public void SetNumericVariableValue(NumericVariableType type, NumericSourceType sourceType, int value)
+        {
+            NumericVariableValue numericVariableValue = new NumericVariableValue();
+            numericVariableValue.Init(type, sourceType, value);
+            NumericVariableValues.Add(numericVariableValue);
+        }
+
+        public void SetNumericVariableValueByBuff(NumericVariableType type, int value, string buffGuid)
+        {
+            NumericVariableBuffValue numericVariableValue = new NumericVariableBuffValue();
+            numericVariableValue.Init(type, value, buffGuid);
+            NumericVariableValues.Add(numericVariableValue);
         }
         
         public abstract bool IsDie();
